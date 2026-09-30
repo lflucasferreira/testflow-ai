@@ -1,0 +1,57 @@
+{
+  "TC-001": {
+    "auth": { "pendingFields": ["howAuthenticated"] },
+    "product": {
+      "availability": "available",
+      "quantity": 1,
+      "pendingFields": ["sku", "name", "unitPrice", "productUrl"]
+    },
+    "expected": { "subtotalFormula": "unitPrice * quantity" }
+  },
+  "TC-002": {
+    "auth": { "pendingFields": ["howAuthenticated"] },
+    "product": {
+      "availability": "available",
+      "quantityBefore": 1,
+      "quantityAfter": 2,
+      "pendingFields": ["sku", "unitPrice", "productUrl"]
+    },
+    "expected": { "subtotalFormula": "unitPrice * quantityAfter" }
+  },
+  "TC-003": {
+    "auth": { "pendingFields": ["howAuthenticated"] },
+    "product": {
+      "availability": "zeroStock",
+      "pendingFields": ["sku", "name", "productUrl", "unavailabilityMessageText"]
+    },
+    "cart": { "mustRemainUnchanged": true }
+  },
+  "TC-004": {
+    "auth": { "pendingFields": ["howAuthenticated"] },
+    "cart": { "nonEmpty": true, "pendingFields": ["lineItems", "totalBeforeDiscount"] },
+    "coupon": {
+      "status": "activeUnexpired",
+      "pendingFields": ["code", "registeredPercentage", "discountDisplayLocation"]
+    },
+    "expected": {
+      "totalReducedByRegisteredPercentage": true,
+      "pendingFields": ["confirmPercentageVsFixedAmount"]
+    }
+  },
+  "TC-005": {
+    "auth": { "pendingFields": ["howAuthenticated"] },
+    "cart": { "nonEmpty": true, "pendingFields": ["totalBeforeDiscount"] },
+    "coupon": {
+      "status": "expired",
+      "pendingFields": ["code", "rejectionMessageText"]
+    },
+    "expected": { "totalUnchanged": true }
+  },
+  "TC-006": {
+    "auth": { "pendingFields": ["howAuthenticated"] },
+    "cart": { "nonEmpty": true, "pendingFields": ["lineItems"] },
+    "address": { "valid": true, "pendingFields": ["fields"] },
+    "payment": { "result": "approved", "pendingFields": ["method", "instrument"] },
+    "expected": { "orderConfirmed": true, "cartEmpty": true }
+  }
+}

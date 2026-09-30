@@ -1,8 +1,5 @@
 name: TestFlow CI
 
-# Draft placeholder for the Playwright quality gate.
-# Enable the install/run steps when package.json + playwright.config.ts exist.
-
 on:
   pull_request:
     paths:
@@ -30,42 +27,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check Playwright project
-        id: ready
-        run: |
-          if [ -f package.json ] && [ -f playwright.config.ts ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "No package.json/playwright.config.ts yet — skipping suite (draft repo)."
-          fi
-
       - uses: actions/setup-node@v4
-        if: steps.ready.outputs.ready == 'true'
         with:
           node-version: "22"
           cache: npm
 
       - name: Install dependencies
-        if: steps.ready.outputs.ready == 'true'
         run: npm ci
 
       - name: Install Playwright browsers
-        if: steps.ready.outputs.ready == 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright
-        if: steps.ready.outputs.ready == 'true'
         run: npx playwright test
 
       - name: Upload Playwright report
-        if: steps.ready.outputs.ready == 'true' && always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
-
-      - name: Draft gate
-        if: steps.ready.outputs.ready != 'true'
-        run: echo "TestFlow CI is a draft until the Playwright project is bootstrapped."

@@ -5,7 +5,7 @@ Agentic + CI drafts for TestFlow.
 | Workflow | Trigger | Does |
 |---|---|---|
 | `testflow-coverage.yml` | `workflow_dispatch` or push to `docs/business-rules/**` on `main` | Opens an issue with the `testflow-coverage` prompt (planner → generator → healer) |
-| `testflow-ci.yml` | PR/push touching `tests/**` (or manual) | Playwright gate when `package.json` + `playwright.config.ts` exist; otherwise no-op |
+| `testflow-ci.yml` | PR/push touching `tests/**` (or manual) | Runs Playwright (`npm ci` + chromium) |
 | `testflow-heal.yml` | `workflow_dispatch` or failed **TestFlow CI** `workflow_run` | Opens an issue with the `testflow-heal` prompt + failure ref |
 
 Flow:

@@ -1,0 +1,19 @@
+{
+  "name": "testflow-ai",
+  "version": "1.0.0",
+  "description": "Draft QA agents for the TestFlow ecosystem.",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lflucasferreira/testflow-ai.git"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
