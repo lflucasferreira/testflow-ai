@@ -1,6 +1,6 @@
 ---
 agent: default
-description: Produce end-to-end test coverage (plan → generate → heal)
+description: Produce end-to-end test coverage (strategy → plan → generate → heal)
 ---
 
 Parameters:
@@ -12,10 +12,10 @@ Parameters:
 
 1. Call `#testflow-planner` with:
    - the business-rules file
-   - the seed file if present (as environment/example context)
-   - the target plan path under `specs/`
+   - the seed file if present
+   - produce `specs/*.strategy.md` per `SYS-*`, then the plan under `specs/`
 
-2. For each numbered scenario in the plan file (`1.1`, `1.2`, …), **one after another, not in parallel**, call `#testflow-generator` (per-case mode) with:
+2. For each numbered **UI-E2E** scenario in the plan file (`1.1`, `1.2`, …), **one after another, not in parallel**, call `#testflow-generator` (per-case mode) with:
    - that single plan scenario
    - matching data path under `specs/data/`
    - the Playwright spec path under `tests/`
@@ -23,4 +23,4 @@ Parameters:
 3. Call `#testflow-healer` with:
    Run the generated tests and fix the failing ones one after another.
 
-Do not rewrite the business-rules document. Stop and report gaps (`BR-*` without a plan scenario) before generating.
+Do not rewrite the business-rules document. Stop and report gaps (`SYS-*` without strategy, `BR-*` without plan/deferral) before generating.

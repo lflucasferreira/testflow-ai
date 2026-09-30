@@ -2,7 +2,7 @@
 
 Draft QA agents for the TestFlow ecosystem.
 
-Idea: a business-rules document goes in; agents plan, generate (cases + data + Playwright), review, and heal failing specs.
+Idea: a business-rules document (systems + rules) goes in; agents design a **test strategy per `SYS-*`**, then plan, generate (cases + data + Playwright for UI-E2E), review, and heal failing specs.
 
 ## Layout (GitHub Copilot / Playwright agents style)
 
@@ -25,22 +25,23 @@ tests/              # Playwright specs
 
 | Agent | Prompt | Delivers |
 |---|---|---|
-| `testflow-planner` | `testflow-plan` | Plan under `specs/` |
-| `testflow-generator` | `testflow-generate` | Cases, data, and Playwright specs |
-| `testflow-reviewer` | `testflow-review` | Review without applying fixes until asked |
+| `testflow-planner` | `testflow-plan` | Per-system `*.strategy.md` + scenario plan under `specs/` |
+| `testflow-generator` | `testflow-generate` | Cases, data, and Playwright specs (UI-E2E only) |
+| `testflow-reviewer` | `testflow-review` | Review strategies + artifacts without applying fixes until asked |
 | `testflow-healer` | `testflow-heal` | Minimal fixes for failing specs |
 
 Loop prompt (no dedicated agent — calls the specialists above):
 
 | Prompt | Flow |
 |---|---|
-| `testflow-coverage` | planner → generate each case → healer |
+| `testflow-coverage` | strategy → plan → generate each UI-E2E case → healer |
 
 ## Skills
 
 | Skill | Use for |
 |---|---|
-| `testflow-traceability` | `BR-*` / `TC-*`, plan/case/data templates, gaps |
+| `testflow-traceability` | `SYS-*` / `BR-*` / `TC-*`, strategy links, plan/case templates, gaps |
+| `testflow-strategy` | QA system design: risks, layers, data, CI, ownership, release, metrics |
 | `testflow-playwright` | seed, selectors, fixtures, spec layout |
 | `testflow-heal` | failure classification and heal guardrails |
 
