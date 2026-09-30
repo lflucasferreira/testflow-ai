@@ -1,0 +1,68 @@
+name: TestFlow coverage
+
+# Draft: asks an agent (human or Copilot coding agent) to run the coverage loop.
+# Does not generate specs itself — opens a tracked task with the coverage prompt.
+
+on:
+  workflow_dispatch:
+    inputs:
+      rules_file:
+        description: File under docs/business-rules/ (e.g. example-checkout.md)
+        required: true
+        default: example-checkout.md
+      seed_file:
+        description: Optional seed spec path
+        required: false
+        default: tests/seed.spec.ts
+  push:
+    branches: [main]
+    paths:
+      - "docs/business-rules/**"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  request-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve rules file
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "rules=${{ inputs.rules_file }}" >> "$GITHUB_OUTPUT"
+            echo "seed=${{ inputs.seed_file }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "rules=(files changed in this push — see commit)" >> "$GITHUB_OUTPUT"
+            echo "seed=tests/seed.spec.ts" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open coverage task issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="testflow-coverage: ${{ steps.meta.outputs.rules }}"
+          BODY="$(cat <<EOF
+          ## TestFlow coverage
+
+          Run the loop in \`.github/prompts/testflow-coverage.prompt.md\`:
+
+          1. \`#testflow-planner\`
+          2. \`#testflow-generator\` per plan scenario (\`1.1\`, \`1.2\`, …), sequentially
+          3. \`#testflow-healer\` — run generated tests and fix failures one by one
+
+          **Inputs**
+          - Business-rules: \`docs/business-rules/${{ steps.meta.outputs.rules }}\`
+          - Seed (if present): \`${{ steps.meta.outputs.seed }}\`
+          - Skills: \`.github/skills/testflow-traceability\`, \`testflow-playwright\`, \`testflow-heal\`
+
+          **Output**
+          - PR (or commits) with \`specs/\` and \`tests/\`
+          - Do not rewrite \`docs/business-rules/\`
+          - Stop and report \`BR-*\` gaps before generating
+
+          Trigger: \`${{ github.event_name }}\` @ \`${{ github.sha }}\`
+          EOF
+          )"
+          gh issue create --repo "${{ github.repository }}" --title "$TITLE" --body "$BODY"

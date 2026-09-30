@@ -1,0 +1,67 @@
+name: TestFlow heal
+
+# Draft: opens a heal task from a manual failure report or a failed Playwright CI run.
+# Wire `workflows: [TestFlow CI]` once testflow-ci.yml is running real suites.
+
+on:
+  workflow_dispatch:
+    inputs:
+      failure_ref:
+        description: Path, URL, or short note for the failure report / log
+        required: true
+        default: "(paste summary in the issue body after creation)"
+      test_files:
+        description: Optional glob of specs to heal (e.g. tests/checkout/**/*.spec.ts)
+        required: false
+        default: tests/**/*.spec.ts
+  workflow_run:
+    workflows: ["TestFlow CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  request-heal:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open heal task issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REF="${{ inputs.failure_ref }}"
+            FILES="${{ inputs.test_files }}"
+            RUN_URL=""
+          else
+            REF="workflow_run #${{ github.event.workflow_run.run_number }} failed"
+            FILES="tests/**/*.spec.ts"
+            RUN_URL="${{ github.event.workflow_run.html_url }}"
+          fi
+
+          TITLE="testflow-heal: ${REF}"
+          BODY="$(cat <<EOF
+          ## TestFlow heal
+
+          Follow \`.github/prompts/testflow-heal.prompt.md\` and \`.github/skills/testflow-heal/SKILL.md\`.
+
+          **Failure input**
+          - Ref: ${REF}
+          - Run URL: ${RUN_URL:-n/a}
+          - Specs in scope: \`${FILES}\`
+
+          **Guardrails**
+          - Touch only \`tests/\`, related helpers, and \`specs/data/\` when a fixture is wrong
+          - Do not edit \`docs/business-rules/\` or rewrite plans
+          - Product bugs: keep the assertion; report \`TC-*\` / \`BR-*\`
+          - Fix and re-run one failing test at a time
+
+          Attach or paste the log / Playwright report in a comment if not linked above.
+          EOF
+          )"
+          gh issue create --repo "${{ github.repository }}" --title "$TITLE" --body "$BODY"
