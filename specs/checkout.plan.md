@@ -1,6 +1,7 @@
 # Checkout — test plan
 
 Source: `docs/business-rules/example-checkout.md`  
+Strategies: `specs/checkout-web.strategy.md`  
 Seed context: `tests/seed.spec.ts` (offline environment anchor; product specs will need `BASE_URL` / real UI)  
 Coverage: refreshed by `/testflow-coverage`
 

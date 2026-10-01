@@ -144,6 +144,6 @@ Set `BASE_URL` when covering a real app. Seed/style anchor: `tests/seed.spec.ts`
 |---|---|
 | Business rules | `docs/business-rules/example-checkout.md` |
 | Plan / cases | `specs/checkout.plan.md`, `specs/checkout.cases.md` |
-| Strategies | `specs/*.strategy.md` (produced by planner — not yet generated for this example) |
+| Strategies | `specs/checkout-web.strategy.md` |
 | Fixtures | `specs/data/checkout.json` |
 | Specs | `tests/**/*.spec.ts` |
