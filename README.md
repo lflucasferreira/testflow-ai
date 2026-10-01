@@ -1,6 +1,15 @@
-# testflow-ai
+# TestFlow Agentic AI
+
+[![TestFlow CI](https://github.com/lflucasferreira/testflow-ai/actions/workflows/testflow-ci.yml/badge.svg)](https://github.com/lflucasferreira/testflow-ai/actions/workflows/testflow-ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
 
 Agentic QA toolkit for the TestFlow ecosystem.
+
+> **Strategy & specs repo — not a test runner.** It doesn't execute against `testflow` on `:5050`; it produces the strategy, plan, cases, and specs that the TestFlow suites (testflow-cypress, testflow-playwright, …) run.
+
+It designs *what* to automate before the runners execute — complementing the TestFlow suites rather than replacing any of them.
 
 ![Planner → Generator → Reviewer → Healer](docs/images/agents-pipeline.jpg)
 
@@ -121,7 +130,10 @@ Use the matching prompts under `.github/prompts/`, or the custom agents under `.
 ```bash
 npm install
 npx playwright install chromium
-npm test
+npm test            # headless run
+npm run test:ui      # Playwright UI mode
+npm run test:headed  # headed browser
+npm run report       # open the last HTML report
 ```
 
 Set `BASE_URL` when covering a real app. Seed/style anchor: `tests/seed.spec.ts`.
@@ -132,6 +144,6 @@ Set `BASE_URL` when covering a real app. Seed/style anchor: `tests/seed.spec.ts`
 |---|---|
 | Business rules | `docs/business-rules/example-checkout.md` |
 | Plan / cases | `specs/checkout.plan.md`, `specs/checkout.cases.md` |
-| Strategies | `specs/*.strategy.md` (produced by planner) |
-| Fixtures | `specs/data/` |
+| Strategies | `specs/*.strategy.md` (produced by planner — not yet generated for this example) |
+| Fixtures | `specs/data/checkout.json` |
 | Specs | `tests/**/*.spec.ts` |
